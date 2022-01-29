@@ -9,19 +9,21 @@ export const AboutModal = ({ isOpen, handleClose }: Props) => {
   return (
     <BaseModal title="About" isOpen={isOpen} handleClose={handleClose}>
       <p className="text-sm text-gray-500">
-        This is an open source clone of the game Wordle -{' '}
+        This is an open source game where you can try and work out the guesses that went into your friend's daily Wordle.
+        <br/>
+        <br/>
         <a
-          href="https://github.com/hannahcode/wordle"
+          href="https://github.com/dignissimus/reversle"
           className="underline font-bold"
         >
-          check out the code here
-        </a>{' '}
-        and{' '}
+          Check out the code here
+        </a>
+        <br/>
         <a
           href="https://www.powerlanguage.co.uk/wordle/"
           className="underline font-bold"
         >
-          play the original here
+          Play the original Wordle here
         </a>
       </p>
     </BaseModal>

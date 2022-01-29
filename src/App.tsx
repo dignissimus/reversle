@@ -1,11 +1,13 @@
 import { InformationCircleIcon } from '@heroicons/react/outline'
 import { ChartBarIcon } from '@heroicons/react/outline'
+import { UploadIcon } from '@heroicons/react/outline'
 import { useState, useEffect } from 'react'
 import { Alert } from './components/alerts/Alert'
 import { Grid } from './components/grid/Grid'
 import { Keyboard } from './components/keyboard/Keyboard'
 import { AboutModal } from './components/modals/AboutModal'
 import { InfoModal } from './components/modals/InfoModal'
+import { UploadModal } from './components/modals/UploadModal'
 import { StatsModal } from './components/modals/StatsModal'
 import { WIN_MESSAGES } from './constants/strings'
 import { isWordInWordList, isWinningWord, solution } from './lib/words'
@@ -21,6 +23,7 @@ function App() {
   const [currentGuess, setCurrentGuess] = useState('')
   const [isGameWon, setIsGameWon] = useState(false)
   const [isInfoModalOpen, setIsInfoModalOpen] = useState(false)
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false)
   const [isNotEnoughLetters, setIsNotEnoughLetters] = useState(false)
   const [isStatsModalOpen, setIsStatsModalOpen] = useState(false)
@@ -114,10 +117,14 @@ function App() {
   return (
     <div className="py-8 max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div className="flex w-80 mx-auto items-center mb-8">
-        <h1 className="text-xl grow font-bold">Not Wordle</h1>
+        <h1 className="text-xl grow font-bold">Reversle</h1>
         <InformationCircleIcon
           className="h-6 w-6 cursor-pointer"
           onClick={() => setIsInfoModalOpen(true)}
+        />
+        <UploadIcon
+          className="h-6 w-6 cursor-pointer"
+          onClick={() => setIsUploadModalOpen(true)}
         />
         <ChartBarIcon
           className="h-6 w-6 cursor-pointer"
@@ -134,6 +141,11 @@ function App() {
       <InfoModal
         isOpen={isInfoModalOpen}
         handleClose={() => setIsInfoModalOpen(false)}
+      />
+      <UploadModal
+        isOpen={isUploadModalOpen}
+        handleClose={() => setIsUploadModalOpen(false)}
+        handleLoad={(wordle: string) => 1}
       />
       <StatsModal
         isOpen={isStatsModalOpen}
