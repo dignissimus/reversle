@@ -30,6 +30,9 @@ function App() {
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [isGameLost, setIsGameLost] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
+  const [wordle, setWordle] = useState(
+    '🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩'
+  )
   const [guesses, setGuesses] = useState<string[]>(() => {
     const loaded = loadGameStateFromLocalStorage()
     if (loaded?.solution !== solution) {
@@ -69,7 +72,12 @@ function App() {
   }, [isGameWon, isGameLost])
 
   const onChar = (value: string) => {
-    if (currentGuess.length < 5 && guesses.length < 6 && !isGameWon) {
+    if (
+      currentGuess.length < 5 &&
+      guesses.length < 6 &&
+      !isGameWon &&
+      !isUploadModalOpen
+    ) {
       setCurrentGuess(`${currentGuess}${value}`)
     }
   }
@@ -131,7 +139,7 @@ function App() {
           onClick={() => setIsStatsModalOpen(true)}
         />
       </div>
-      <Grid guesses={guesses} currentGuess={currentGuess} />
+      <Grid guesses={guesses} currentGuess={currentGuess} wordle={wordle} />
       <Keyboard
         onChar={onChar}
         onDelete={onDelete}
@@ -145,7 +153,7 @@ function App() {
       <UploadModal
         isOpen={isUploadModalOpen}
         handleClose={() => setIsUploadModalOpen(false)}
-        handleLoad={(wordle: string) => 1}
+        handleLoad={setWordle}
       />
       <StatsModal
         isOpen={isStatsModalOpen}

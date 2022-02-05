@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Cell } from '../grid/Cell'
 import { BaseModal } from './BaseModal'
 
 type Props = {
