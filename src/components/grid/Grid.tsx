@@ -7,14 +7,23 @@ type Props = {
   guesses: string[]
   currentGuess: string
   wordle: string
+  setStatuses: (statuses: CharStatus[][]) => void
+  setWord: (word: string) => void
 }
 
 // const ABSENT = ['⬜']
 const PRESENT = ['🟨']
 const CORRECT = ['🟩']
 
-export const Grid = ({ guesses, currentGuess, wordle }: Props) => {
+export const Grid = ({
+  guesses,
+  currentGuess,
+  wordle,
+  setStatuses,
+  setWord,
+}: Props) => {
   const statuses: CharStatus[][] = []
+  let nlines = wordle.split('\n').length
 
   for (let line of wordle.split('\n')) {
     let stati: CharStatus[] = []
@@ -24,17 +33,17 @@ export const Grid = ({ guesses, currentGuess, wordle }: Props) => {
       } else if (CORRECT.includes(character)) {
         stati.push('correct')
       } else {
-        console.log(character.length)
         stati.push('absent')
       }
     }
 
     statuses.push(stati)
   }
+  setStatuses(statuses)
+  const word = 'SKILL'
+  setWord(word)
 
-  console.log(statuses)
-  const empties =
-    guesses.length < 5 ? Array.from(Array(5 - guesses.length)) : []
+  const empties = Array.from(Array(statuses.length - guesses.length - 2))
 
   let index: number = 0
 
@@ -49,6 +58,7 @@ export const Grid = ({ guesses, currentGuess, wordle }: Props) => {
       {empties.map((_, i) => (
         <EmptyRow key={i} statuses={statuses[index++]} />
       ))}
+      <CompletedRow guess={word} key={5} statuses={statuses[index++]} />
     </div>
   )
 }

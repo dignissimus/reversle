@@ -16,6 +16,7 @@ import {
   loadGameStateFromLocalStorage,
   saveGameStateToLocalStorage,
 } from './lib/localStorage'
+import { CharStatus } from './lib/statuses'
 
 const ALERT_TIME_MS = 2000
 
@@ -30,6 +31,11 @@ function App() {
   const [isWordNotFoundAlertOpen, setIsWordNotFoundAlertOpen] = useState(false)
   const [isGameLost, setIsGameLost] = useState(false)
   const [successAlert, setSuccessAlert] = useState('')
+  const [doesNotMatch, setDoesNotMatch] = useState(false)
+  // const [statuses, setStatuses] = useState<CharStatus[][]>([])
+  let statuses: CharStatus[][] = []
+  let word: String
+
   const [wordle, setWordle] = useState(
     '🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩\n🟩🟩🟩🟩🟩'
   )
@@ -53,6 +59,31 @@ function App() {
   useEffect(() => {
     saveGameStateToLocalStorage({ guesses, solution })
   }, [guesses])
+
+  function zip<T1, T2>(a: T1[], b: T2[]): [T1, T2][] {
+    if (a.length === 0 || b.length === 0) return []
+    else
+      return [
+        ...zip(a.slice(0, -1), b.slice(0, -1)),
+        [a[a.length - 1], b[b.length - 1]],
+      ]
+  }
+
+  const matches = (w: string) => {
+    let toMatch = statuses[guesses.length]
+    console.log(zip(word.split(''), w.split('')))
+    for (let [s, [actual, entered]] of zip(
+      toMatch,
+      zip(word.split(''), w.split(''))
+    )) {
+      if (s === 'present' && (actual === entered || !word.includes(entered)))
+        return false
+      if (s === 'correct' && actual !== entered) return false
+      if (s === 'absent' && word.includes(entered)) return false
+    }
+    console.log(toMatch)
+    return true
+  }
 
   useEffect(() => {
     if (isGameWon) {
@@ -97,6 +128,15 @@ function App() {
       }, ALERT_TIME_MS)
     }
 
+    console.log(matches(currentGuess))
+    if (!matches(currentGuess)) {
+      setDoesNotMatch(true)
+
+      return setTimeout(() => {
+        setDoesNotMatch(false)
+      }, ALERT_TIME_MS)
+    }
+
     if (!isWordInWordList(currentGuess)) {
       setIsWordNotFoundAlertOpen(true)
       return setTimeout(() => {
@@ -104,7 +144,7 @@ function App() {
       }, ALERT_TIME_MS)
     }
 
-    const winningWord = isWinningWord(currentGuess)
+    const winningWord = guesses.length === statuses.length - 2 // isWinningWord(currentGuess)
 
     if (currentGuess.length === 5 && guesses.length < 6 && !isGameWon) {
       setGuesses([...guesses, currentGuess])
@@ -139,7 +179,17 @@ function App() {
           onClick={() => setIsStatsModalOpen(true)}
         />
       </div>
-      <Grid guesses={guesses} currentGuess={currentGuess} wordle={wordle} />
+      <Grid
+        guesses={guesses}
+        currentGuess={currentGuess}
+        wordle={wordle}
+        setStatuses={(s) => {
+          statuses = s
+        }}
+        setWord={(w) => {
+          word = w
+        }}
+      />
       <Keyboard
         onChar={onChar}
         onDelete={onDelete}
@@ -183,6 +233,10 @@ function App() {
       <Alert message="Not enough letters" isOpen={isNotEnoughLetters} />
       <Alert message="Word not found" isOpen={isWordNotFoundAlertOpen} />
       <Alert message={`The word was ${solution}`} isOpen={isGameLost} />
+      <Alert
+        message="That word doesn't match the given colours"
+        isOpen={doesNotMatch}
+      />
       <Alert
         message={successAlert}
         isOpen={successAlert !== ''}
